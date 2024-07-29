@@ -38,6 +38,13 @@ contract LiquidityPool is ERC20 {
     function _calculateAmountB_add(
         uint256 _amountADesierd
     ) internal view returns (uint256) {
+        // A * B = k
+        // B = k / A
+        // A * x = _amountADesierd
+        // B * x = amountBOptimal
+        // B * x = k / A * x
+        // B * x = k * x / A
+        // B * x = A * x * B / A
         return (reserveB * _amountADesierd) / reserveA;
     }
 
@@ -87,6 +94,9 @@ contract LiquidityPool is ERC20 {
         );
         require(totalLiquidity >= liquidityTokens, "Insufficient liquidity");
         _burn(msg.sender, liquidityTokens);
+
+        // calculateLiquidityTokens 的逆过程
+
         uint256 amountA = (liquidityTokens * reserveA) / totalLiquidity;
         uint256 amountB = (liquidityTokens * reserveB) / totalLiquidity;
 
@@ -129,6 +139,12 @@ contract LiquidityPool is ERC20 {
         uint256 amountB
     ) public view returns (uint256) {
         require(amountB > 0, "invalid input");
+
+        // A * B = k
+        // (A - x) * (B + y) = k
+        // (A - x) = A * B  / (B + y)
+        // x = A - A * B  / (B + y)
+
         uint256 totalAmountA = (reserveA * reserveB) / (reserveB + amountB);
         return reserveA - totalAmountA;
     }
